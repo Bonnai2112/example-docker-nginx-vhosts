@@ -1,0 +1,7 @@
+version: '2'
+services:
+  web:
+    image: vhost-docker:v1
+    ports:
+      - "8000:80"
+      - "8443:443"
