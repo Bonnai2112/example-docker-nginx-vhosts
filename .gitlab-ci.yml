@@ -8,15 +8,15 @@ deploy_production:
   before_script:
     - "which ssh-agent || ( apt-get update -y && apt install openssh-client -y )"
     - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/ovh
-    - chmod 700 ~/.ssh/ovh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/gitlab.com
+    - chmod 700 ~/.ssh/gitlab.com
     - eval "$(ssh-agent -s)"
-    - ssh-add ~/.ssh/ovh
+    - ssh-add ~/.ssh/gitlab.com
     #- ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
     - apt update && apt-get install rsync curl -y -qq
   script:
     - echo "Deploying to server"
-    - ssh -i ~/.ssh/ovh -o StrictHostKeyChecking=no debian@151.80.148.83 -p 22
+    - ssh -i ~/.ssh/gitlab.com -o StrictHostKeyChecking=no debian@151.80.148.83 -p 22
     - rsync -avz --progress -a -e "ssh -p 22" /usr/src/vhosts/ debian@151.80.148.83:/home/debian/src/vhosts
     - echo "Deployed"
   environment:
