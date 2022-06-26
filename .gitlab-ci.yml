@@ -1,0 +1,25 @@
+image: ubuntu
+
+stages:
+  - deploy
+
+deploy_production:
+  stage: deploy
+  before_script:
+    - "which ssh-agent || ( apt-get update -y && apt install openssh-client -y )"
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/ovh
+    - chmod 700 ~/.ssh/ovh
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/ovh
+    #- ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
+    - apt update && apt-get install rsync curl -y -qq
+  script:
+    - echo "Deploying to server"
+    - ssh -i ~/.ssh/ovh -o StrictHostKeyChecking=no debian@151.80.148.83 -p 22
+    - rsync -avz --progress -a -e "ssh -p 22" /usr/src/vhosts/ debian@151.80.148.83:/home/debian/src/vhosts
+    - echo "Deployed"
+  environment:
+    name: production
+  only:
+    - master
